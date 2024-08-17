@@ -20,28 +20,31 @@ class Home extends StatelessWidget {
       BottomNavigationBarItem(
           icon: Image.asset(
             'assets/icons/products.png',
-            width: 26,
+            width: 22,
+            color: darkGrey,
           ),
-          label: 'Prodcugs'),
+          label: 'Products'),
       BottomNavigationBarItem(
           icon: Image.asset(
             'assets/icons/orders.png',
-            width: 26,
+            width: 22,
+            color: darkGrey,
           ),
           label: 'Orders'),
       BottomNavigationBarItem(
           icon: Image.asset(
             'assets/icons/profile.png',
-            width: 26,
+            width: 22,
+            color: darkGrey,
           ),
-          label: 'settings'),
+          label: 'Settings'),
     ];
 
     var navBody = [
-      const HomeScreen(),
-      const ProductScreen(),
+      HomeScreen(),
+      ProductScreen(),
       const OrderScreen(),
-      const SettingScreen(),
+      SettingScreen(),
     ];
 
     return Scaffold(
@@ -56,6 +59,7 @@ class Home extends StatelessWidget {
         () => BottomNavigationBar(
             currentIndex: controller.currentNavIndex.value,
             selectedItemColor: purpleColor,
+            unselectedItemColor: darkGrey,
             selectedLabelStyle: const TextStyle(fontFamily: semibold),
             type: BottomNavigationBarType.fixed,
             backgroundColor: white,

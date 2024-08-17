@@ -1,13 +1,19 @@
 import 'package:e_mart_seller/const/colors.dart';
+import 'package:e_mart_seller/const/const.dart';
+import 'package:e_mart_seller/controller/auth_controller.dart';
 import 'package:e_mart_seller/views/home_screen/home.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class loginScreen extends StatelessWidget {
-  const loginScreen({super.key});
+  loginScreen({super.key});
+
+  var emailController = TextEditingController();
+  var passowrdController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    var controller = Get.put(AuthController());
     return Scaffold(
       backgroundColor: purpleColor,
       body: SafeArea(
@@ -49,18 +55,20 @@ class loginScreen extends StatelessWidget {
                   color: Colors.white, borderRadius: BorderRadius.circular(8)),
               child: Column(
                 children: [
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.all(8.0),
                     child: TextField(
+                      controller: emailController,
                       decoration: InputDecoration(
                           border: InputBorder.none,
                           prefixIcon: Icon(Icons.email, color: purpleColor),
                           hintText: 'eg vender@emart.com'),
                     ),
                   ),
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.all(8.0),
                     child: TextField(
+                      controller: passowrdController,
                       decoration: InputDecoration(
                           border: InputBorder.none,
                           prefixIcon: Icon(Icons.lock, color: purpleColor),
