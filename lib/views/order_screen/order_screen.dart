@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_mart_seller/controller/order_controller.dart';
+// import 'package:e_mart_seller/controller/order_controller.dart';
 import 'package:e_mart_seller/services/store_services.dart';
 import 'package:e_mart_seller/views/order_screen/order_details_screen.dart';
 import 'package:e_mart_seller/widgets/app_bar.dart';
@@ -12,7 +12,7 @@ class OrderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var controller = Get.put(OrderController());
+    // var controller = Get.put(OrderController());
     return Scaffold(
       appBar: appBarWidget('Orders'),
       body: SafeArea(
