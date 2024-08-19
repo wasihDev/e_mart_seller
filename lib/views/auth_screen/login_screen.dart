@@ -1,15 +1,14 @@
-import 'package:e_mart_seller/const/colors.dart';
 import 'package:e_mart_seller/const/const.dart';
+import 'package:e_mart_seller/const/snackbars.dart';
 import 'package:e_mart_seller/controller/auth_controller.dart';
 import 'package:e_mart_seller/views/home_screen/home.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class loginScreen extends StatelessWidget {
   loginScreen({super.key});
 
   var emailController = TextEditingController();
-  var passowrdController = TextEditingController();
+  var passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +43,7 @@ class loginScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       fontSize: 22,
                       color: Colors.white),
-                )
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -56,20 +55,20 @@ class loginScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     child: TextField(
                       controller: emailController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                           border: InputBorder.none,
                           prefixIcon: Icon(Icons.email, color: purpleColor),
                           hintText: 'eg vender@emart.com'),
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     child: TextField(
-                      controller: passowrdController,
-                      decoration: InputDecoration(
+                      controller: passwordController,
+                      decoration: const InputDecoration(
                           border: InputBorder.none,
                           prefixIcon: Icon(Icons.lock, color: purpleColor),
                           hintText: '********'),
@@ -87,24 +86,45 @@ class loginScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  InkWell(
-                    onTap: () {
-                      Get.to(() => const Home());
-                    },
-                    child: Container(
-                      height: 45,
-                      width: MediaQuery.of(context).size.width * .8,
-                      decoration: BoxDecoration(
-                          color: purpleColor,
-                          borderRadius: BorderRadius.circular(8)),
-                      child: const Center(
-                        child: Text(
-                          'Login',
-                          style: TextStyle(fontSize: 18, color: Colors.white),
+                  Obx(() {
+                    return InkWell(
+                      onTap: () async {
+                        controller.isLoading(true);
+
+                        await controller
+                            .signInMethod(
+                                email: emailController.text,
+                                password: passwordController.text)
+                            .then((value) {
+                          if (value != null) {
+                            Get.snackbar("Successfully", "Login Sucesfully",
+                                backgroundColor: green);
+                            controller.isLoading(false);
+                            Get.offAll(() => const Home());
+                          } else {
+                            controller.isLoading(false);
+                            errorSnack("Fill the fields");
+                          }
+                        });
+                      },
+                      child: Container(
+                        height: 45,
+                        width: MediaQuery.of(context).size.width * .8,
+                        decoration: BoxDecoration(
+                            color: purpleColor,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Center(
+                          child: controller.isLoading.value
+                              ? const CircularProgressIndicator(color: white)
+                              : Text(
+                                  'Login',
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
+                                ),
                         ),
                       ),
-                    ),
-                  )
+                    );
+                  })
                 ],
               ),
             ),

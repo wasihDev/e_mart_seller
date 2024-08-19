@@ -10,7 +10,7 @@ SnackbarController errorSnack(String error) {
 
 SnackbarController successSnack(String msg) {
   return Get.snackbar(
-    'Updated',
+    'Success',
     msg,
     snackPosition: SnackPosition.BOTTOM,
     backgroundColor: green,
