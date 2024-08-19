@@ -1,6 +1,6 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_mart_seller/const/snackbars.dart';
+import 'package:e_mart_seller/controller/products_controller.dart';
 import 'package:e_mart_seller/services/store_services.dart';
 import 'package:e_mart_seller/views/product_screen/add_product.dart';
 import 'package:e_mart_seller/views/product_screen/product_details.dart';
@@ -13,9 +13,12 @@ class ProductScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var controller = Get.put(ProductsController());
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
+          await controller.getCategories();
+          controller.populateCategoryList();
           Get.to(() => const AddProduct());
         },
         child: const Icon(Icons.add),
@@ -41,14 +44,17 @@ class ProductScreen extends StatelessWidget {
                         leading: SizedBox(
                             height: 50,
                             width: 80,
-                            child: Image.network(itemData['p_image'][0])),
+                            child: Image.network(
+                              itemData['p_image'][0],
+                              fit: BoxFit.fill,
+                            )),
                         title: Text(itemData['p_name']),
                         subtitle: Row(
                           children: [
                             Text('\$${itemData['p_price']}'),
                             const SizedBox(width: 10),
                             Text(
-                              '${itemData['is_featured'] == true ? "Featured" : ""}',
+                              itemData['is_featured'] == true ? "Featured" : "",
                               style: const TextStyle(
                                   color: Colors.green,
                                   fontWeight: FontWeight.bold),
@@ -57,12 +63,24 @@ class ProductScreen extends StatelessWidget {
                         ),
                         trailing: PopupMenuButton(
                           onSelected: (value) {
-                            // your logic
+                            print(value);
+                            // if (itemData['is_featured'] && value == true) {
+                            //   controller.removeFeatures(itemData.id);
+                            // } else {
+                            //   controller.addFeatures(itemData.id);
+                            // }
                           },
                           itemBuilder: (BuildContext bc) {
-                            return const [
+                            return [
                               PopupMenuItem(
-                                child: Row(
+                                onTap: () {
+                                  if (itemData['is_featured'] == true) {
+                                    controller.removeFeatures(itemData.id);
+                                  } else {
+                                    controller.addFeatures(itemData.id);
+                                  }
+                                },
+                                child: const Row(
                                   children: [
                                     Icon(Icons.featured_play_list),
                                     SizedBox(width: 5),
@@ -71,7 +89,8 @@ class ProductScreen extends StatelessWidget {
                                 ),
                               ),
                               PopupMenuItem(
-                                child: Row(
+                                onTap: () {},
+                                child: const Row(
                                   children: [
                                     Icon(Icons.edit),
                                     SizedBox(width: 5),
@@ -80,7 +99,11 @@ class ProductScreen extends StatelessWidget {
                                 ),
                               ),
                               PopupMenuItem(
-                                child: Row(
+                                onTap: () {
+                                  controller.removeProduct(itemData.id);
+                                  successSnack("PRODUCT REMOvED");
+                                },
+                                child: const Row(
                                   children: [
                                     Icon(Icons.delete),
                                     SizedBox(width: 5),

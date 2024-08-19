@@ -1,6 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_mart_seller/const/colors.dart';
+import 'package:e_mart_seller/const/const.dart';
+import 'package:e_mart_seller/services/store_services.dart';
+import 'package:e_mart_seller/views/product_screen/product_details.dart';
 import 'package:e_mart_seller/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 // ignore: must_be_immutable
 class HomeScreen extends StatelessWidget {
@@ -21,44 +26,68 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarWidget('Dashboard'),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          GridView.builder(
-            shrinkWrap: true,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 2.5,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 0),
-            itemCount: 4,
-            itemBuilder: (_, index) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 9.0),
-              child: ProductWidget(
-                title: myList['name']![index],
-                image: myList['images']![index],
-                itemCount: myList['count']![index],
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text('Popular Products'),
-          ),
-          ListView.builder(
-              itemCount: 3,
-              shrinkWrap: true,
-              itemBuilder: (_, index) {
-                return ListTile(
-                  leading: Image.asset('assets/product.jpg'),
-                  title: const Text('Product title'),
-                  subtitle: const Text('\$43.0'),
-                  trailing: const Icon(Icons.arrow_forward_ios),
-                );
-              })
-        ],
-      ),
+      body: StreamBuilder(
+          stream: StoreServices.getProducts(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (!snapshot.hasData) {
+              return const CircularProgressIndicator();
+            } else {
+              var data = snapshot.data!.docs;
+              data = data.sortedBy((a, b) =>
+                  b['p_wishlist'].length.compareTo(a['p_wishlist'].length));
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GridView.builder(
+                    shrinkWrap: true,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 2.5,
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 0),
+                    itemCount: 4,
+                    itemBuilder: (_, index) => Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 9.0),
+                      child: ProductWidget(
+                        title: myList['name']![index],
+                        image: myList['images']![index],
+                        itemCount: myList['count']![index],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('Popular Products'),
+                  ),
+                  ListView.builder(
+                      itemCount: data.length,
+                      shrinkWrap: true,
+                      itemBuilder: (_, index) {
+                        return data[index]['p_wishlist'].length == 0
+                            ? SizedBox()
+                            : ListTile(
+                                onTap: () {
+                                  Get.to(() => ProductDetails(
+                                      data: snapshot.data!.docs[index]));
+                                },
+                                leading: SizedBox(
+                                    height: 50,
+                                    width: 80,
+                                    child: Image.network(
+                                      data[index]['p_image'][0],
+                                      fit: BoxFit.fill,
+                                    )),
+                                title: Text(data[index]['p_name']),
+                                subtitle: Text('\$${data[index]['p_price']}'),
+                                trailing: const Icon(Icons.arrow_forward_ios),
+                              );
+                      })
+                ],
+              );
+            }
+          }),
     );
   }
 }

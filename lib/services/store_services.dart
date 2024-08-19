@@ -37,4 +37,11 @@ class StoreServices {
         .where('vender_id', isEqualTo: currentUser!.uid)
         .snapshots();
   }
+
+  static getPopularsProdcuts(uid) {
+    return firestore
+        .collection(products)
+        .where('vendor_id', isEqualTo: currentUser!.uid)
+        .orderBy('p_wishlist'.length);
+  }
 }
